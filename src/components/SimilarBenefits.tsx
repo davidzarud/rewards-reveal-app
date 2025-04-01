@@ -1,24 +1,54 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { similarBenefits } from "@/data/mockData";
 import BenefitCard from "@/components/BenefitCard";
 import { Search } from "lucide-react";
 import TotalSavings from "@/components/TotalSavings";
+import { fetchSimilarBenefits } from "@/services/api";
+import { toast } from "@/hooks/use-toast";
 
 const SimilarBenefits = () => {
   const [searchQuery, setSearchQuery] = useState("");
   
-  const filteredBenefits = similarBenefits.filter(item => 
+  const { data: benefits = [], isLoading, error } = useQuery({
+    queryKey: ['similarBenefits'],
+    queryFn: fetchSimilarBenefits,
+  });
+  
+  // Show toast if there's an error
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error loading similar benefits",
+        description: "Could not load data. Showing mock data instead.",
+        variant: "destructive",
+      });
+      console.error("Error loading similar benefits:", error);
+    }
+  }, [error]);
+  
+  const filteredBenefits = benefits.filter(item => 
     item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
-  const totalPotentialSavings = similarBenefits.reduce((total, item) => {
+  const totalPotentialSavings = benefits.reduce((total, item) => {
     // Handle "Up to $X" format
     const savingsText = item.savings.replace("Up to ", "").replace("$", "");
     return total + parseFloat(savingsText);
   }, 0);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-8">
+          <p className="text-bank-dark-gray">Loading similar benefits...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
