@@ -1,20 +1,27 @@
 
 import { Benefit, UserProfile } from "@/data/mockData";
 
-const API_BASE_URL = "http://localhost";
+const API_BASE_URL = "http://10.171.1.19:8080";
 
 /**
  * Fetches missed opportunities from the API
  */
 export async function fetchMissedOpportunities(): Promise<Benefit[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/missed-benefits`);
-    
+    const api = 'benefits-matcher/api/missedOpportunities/{customerId}?customerId=1';
+    const response = await fetch(`${API_BASE_URL}/${api}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
     if (!response.ok) {
       throw new Error(`Failed to fetch missed opportunities: ${response.status}`);
     }
-    
-    return await response.json();
+
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Error fetching missed opportunities:", error);
     // Return empty array in case of error
@@ -27,15 +34,22 @@ export async function fetchMissedOpportunities(): Promise<Benefit[]> {
  */
 export async function fetchSimilarBenefits(): Promise<Benefit[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/similar-benefits`);
-    
+    const api = 'benefits-matcher/api/matchBenefits/{customerId}?customerId=1';
+    const response = await fetch(`${API_BASE_URL}/${api}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
     if (!response.ok) {
-      throw new Error(`Failed to fetch similar benefits: ${response.status}`);
+      throw new Error(`Failed to fetch missed opportunities: ${response.status}`);
     }
-    
-    return await response.json();
+
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error("Error fetching similar benefits:", error);
+    console.error("Error fetching missed opportunities:", error);
     // Return empty array in case of error
     return [];
   }
