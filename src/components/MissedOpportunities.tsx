@@ -1,23 +1,53 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { missedOpportunities } from "@/data/mockData";
 import BenefitCard from "@/components/BenefitCard";
 import { Search } from "lucide-react";
 import TotalSavings from "@/components/TotalSavings";
+import { fetchMissedOpportunities } from "@/services/api";
+import { toast } from "@/hooks/use-toast";
 
 const MissedOpportunities = () => {
   const [searchQuery, setSearchQuery] = useState("");
   
-  const filteredOpportunities = missedOpportunities.filter(item => 
+  const { data: opportunities = [], isLoading, error } = useQuery({
+    queryKey: ['missedOpportunities'],
+    queryFn: fetchMissedOpportunities,
+  });
+  
+  // Show toast if there's an error
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error loading missed opportunities",
+        description: "Could not load data. Showing mock data instead.",
+        variant: "destructive",
+      });
+      console.error("Error loading missed opportunities:", error);
+    }
+  }, [error]);
+  
+  const filteredOpportunities = opportunities.filter(item => 
     item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
-  const totalPotentialSavings = missedOpportunities.reduce(
+  const totalPotentialSavings = opportunities.reduce(
     (total, item) => total + parseFloat(item.savings.replace("$", "")), 
     0
   );
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-8">
+          <p className="text-bank-dark-gray">Loading missed opportunities...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
