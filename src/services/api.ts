@@ -1,15 +1,15 @@
 
+import { getApiBaseUrl } from "@/config";
 import { Benefit, UserProfile } from "@/data/mockData";
-
-const API_BASE_URL = "http://10.171.1.19:8080";
 
 /**
  * Fetches missed opportunities from the API
  */
 export async function fetchMissedOpportunities(): Promise<Benefit[]> {
   try {
+    const baseUrl = await getApiBaseUrl();
     const api = 'benefits-matcher/api/missedOpportunities/{customerId}?customerId=1';
-    const response = await fetch(`${API_BASE_URL}/${api}`, {
+    const response = await fetch(`${baseUrl}/${api}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -34,8 +34,9 @@ export async function fetchMissedOpportunities(): Promise<Benefit[]> {
  */
 export async function fetchSimilarBenefits(): Promise<Benefit[]> {
   try {
+    const baseUrl = await getApiBaseUrl();
     const api = 'benefits-matcher/api/matchBenefits/{customerId}?customerId=1';
-    const response = await fetch(`${API_BASE_URL}/${api}`, {
+    const response = await fetch(`${baseUrl}/${api}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

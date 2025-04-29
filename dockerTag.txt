@@ -1,0 +1,2 @@
+docker build -t davidzarud/rewards-reveal-app . 
+docker push davidzarud/rewards-reveal-app
